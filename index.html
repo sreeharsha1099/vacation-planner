@@ -36,7 +36,7 @@
             font-weight: bold;
             color: #4CAF50;
         }
-        .add-buttons, .delete-buttons {
+        .add-buttons, .delete-buttons, .save-buttons {
             text-align: center;
             margin: 20px;
         }
@@ -60,6 +60,10 @@
         }
     </style>
     <script>
+        document.addEventListener('DOMContentLoaded', (event) => {
+            loadTableData();
+        });
+
         function addRow() {
             const table = document.querySelector('tbody');
             const newRow = document.createElement('tr');
@@ -126,6 +130,38 @@
                 alert('No columns to delete.');
             }
         }
+
+        function saveTableData() {
+            const tableData = [];
+            const rows = document.querySelectorAll('tbody tr');
+            rows.forEach(row => {
+                const rowData = [];
+                row.querySelectorAll('td').forEach(cell => {
+                    rowData.push(cell.textContent);
+                });
+                tableData.push(rowData);
+            });
+            localStorage.setItem('vacationPlannerData', JSON.stringify(tableData));
+            alert('Data saved successfully!');
+        }
+
+        function loadTableData() {
+            const tableData = JSON.parse(localStorage.getItem('vacationPlannerData'));
+            if (tableData) {
+                const table = document.querySelector('tbody');
+                table.innerHTML = '';  // Clear existing table data
+                tableData.forEach(rowData => {
+                    const newRow = document.createElement('tr');
+                    rowData.forEach(cellData => {
+                        const cell = document.createElement('td');
+                        cell.textContent = cellData;
+                        cell.contentEditable = 'true';
+                        newRow.appendChild(cell);
+                    });
+                    table.appendChild(newRow);
+                });
+            }
+        }
     </script>
 </head>
 <body>
@@ -137,6 +173,9 @@
     <div class="delete-buttons">
         <button onclick="deleteRow()">Delete Row</button>
         <button onclick="deleteColumn()">Delete Column</button>
+    </div>
+    <div class="save-buttons">
+        <button onclick="saveTableData()">Save Data</button>
     </div>
     <table>
         <thead>
